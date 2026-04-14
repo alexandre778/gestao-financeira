@@ -8,7 +8,6 @@ import {
   ShoppingCart,
   TrendingUp,
   Wallet,
-  Menu,
 } from 'lucide-react';
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
@@ -21,7 +20,6 @@ interface ProdutoData {
 }
 
 export default function Home() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [numItens, setNumItens] = useState<number>(0);
   const [confirmado, setConfirmado] = useState(false);
   const [itens, setItens] = useState<ProdutoData[]>([]);
@@ -75,46 +73,9 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans overflow-x-hidden">
-      {/* MENU MOBILE */}
-      <div className="md:hidden flex justify-between items-center p-4 bg-white shadow">
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="p-2 bg-blue-600 text-white rounded-lg"
-        >
-          <Menu />
-        </button>
-        <span className="font-bold">AGM//SW</span>
-      </div>
+    <div className="min-h-screen bg-slate-50 p-4 md:p-6 font-sans overflow-x-hidden">
+      <div className="max-w-5xl mx-auto space-y-8">
 
-      {/* SIDEBAR */}
-      <div
-        className={`fixed top-0 left-0 h-full w-64 bg-slate-900 text-white p-5 transform transition-transform z-50
-        ${menuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
-      >
-        <h2 className="text-xl font-bold mb-8">AGM//SW</h2>
-
-        <nav className="flex flex-col gap-4">
-          <Link href="/" className="menu-item">
-            Painel
-          </Link>
-          <Link href="/produtos" className="menu-item">
-            Produtos
-          </Link>
-          <Link href="/vendas" className="menu-item">
-            Vendas
-          </Link>
-          <Link href="/caixa" className="menu-item">
-            Caixa
-          </Link>
-          <Link href="/relatorios" className="menu-item">
-            Relatórios
-          </Link>
-        </nav>
-      </div>
-
-      {/* CONTEÚDO */}
-      <div className="md:ml-64 p-4 md:p-8 space-y-8">
         {/* HEADER */}
         <header className="space-y-6 border-b border-slate-200 pb-6">
           <div className="flex flex-col md:flex-row md:items-center gap-3">
@@ -127,23 +88,47 @@ export default function Home() {
                 Sistema de Gestão Financeira
               </h1>
               <p className="text-sm text-blue-600 font-semibold">
-                Controle de Lucros, Custos e Desempenho
+                Controle Inteligente de Lucros, Custos e Desempenho
               </p>
             </div>
+          </div>
+
+          {/* MENU */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <Link href="/vendas" className="card-menu">
+              <ShoppingCart size={18} />
+              <span>Vendas</span>
+            </Link>
+
+            <Link href="/produtos" className="card-menu">
+              <Package size={18} />
+              <span>Produtos</span>
+            </Link>
+
+            <Link href="/caixa" className="card-menu">
+              <Wallet size={18} />
+              <span>Caixa</span>
+            </Link>
+
+            <Link href="/relatorios" className="card-menu">
+              <FileText size={18} />
+              <span>Relatórios</span>
+            </Link>
           </div>
         </header>
 
         {/* INÍCIO */}
         {!confirmado ? (
-          <div className="bg-white p-6 md:p-12 rounded-3xl shadow border text-center space-y-6">
-            <h2 className="text-lg md:text-xl font-semibold">
+          <div className="bg-white p-6 md:p-10 rounded-3xl shadow-xl border text-center space-y-6">
+            <h2 className="text-lg md:text-xl font-semibold text-slate-700">
               Análise Financeira do Dia
             </h2>
 
-            <form
-              onSubmit={iniciarAnalise}
-              className="max-w-xs mx-auto space-y-4"
-            >
+            <form onSubmit={iniciarAnalise} className="max-w-xs mx-auto space-y-4">
+              <p className="text-sm text-slate-500">
+                Quantos itens deseja analisar?
+              </p>
+
               <input
                 type="number"
                 min="1"
@@ -151,15 +136,24 @@ export default function Home() {
                 value={numItens || ''}
                 onChange={(e) => setNumItens(Number(e.target.value))}
                 className="input-main"
-                placeholder="Quantidade de itens"
+                placeholder="0"
               />
 
-              <button className="btn-primary">INICIAR</button>
+              <button className="btn-primary">
+                INICIAR ANÁLISE
+              </button>
             </form>
           </div>
         ) : !mostrarResultado ? (
+
+          /* FORMULÁRIO */
           <div className="space-y-6">
-            <h2 className="font-bold text-lg">Dados Financeiros</h2>
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
+              <h2 className="title-section">
+                Dados Financeiros
+              </h2>
+              <span className="badge">{itens.length} ITENS</span>
+            </div>
 
             {itens.map((item, index) => (
               <div key={index} className="card-item">
@@ -169,7 +163,6 @@ export default function Home() {
                   onChange={(e) =>
                     handleInputChange(index, 'nome', e.target.value)
                   }
-                  className="input-item"
                 />
 
                 <input
@@ -178,45 +171,40 @@ export default function Home() {
                   onChange={(e) =>
                     handleInputChange(index, 'custo', Number(e.target.value))
                   }
-                  className="input-item"
                 />
 
                 <input
                   type="number"
                   placeholder="Venda"
                   onChange={(e) =>
-                    handleInputChange(
-                      index,
-                      'precoVenda',
-                      Number(e.target.value),
-                    )
+                    handleInputChange(index, 'precoVenda', Number(e.target.value))
                   }
-                  className="input-item"
                 />
 
                 <input
                   type="number"
                   placeholder="Qtd"
                   onChange={(e) =>
-                    handleInputChange(
-                      index,
-                      'quantidadeVendida',
-                      Number(e.target.value),
-                    )
+                    handleInputChange(index, 'quantidadeVendida', Number(e.target.value))
                   }
-                  className="input-item"
                 />
               </div>
             ))}
 
-            <button onClick={() => setResultado(true)} className="btn-success">
+            <button
+              onClick={() => setResultado(true)}
+              className="btn-success"
+            >
               <TrendingUp size={18} />
               GERAR RELATÓRIO
             </button>
           </div>
         ) : (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+
+          /* RESULTADO */
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
               <div className="card-result">
                 <p>Faturamento</p>
                 <h2 className="text-blue-600">
@@ -237,6 +225,7 @@ export default function Home() {
                   R$ {lucroTotal.toFixed(2)}
                 </h2>
               </div>
+
             </div>
 
             <button onClick={reiniciar} className="btn-reset">
@@ -248,38 +237,43 @@ export default function Home() {
       </div>
 
       <style jsx>{`
-        .menu-item {
-          padding: 10px;
-          border-radius: 8px;
-          transition: 0.2s;
-        }
-
-        .menu-item:hover {
-          background: #1e293b;
+        .card-menu {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px;
+          background: white;
+          border-radius: 12px;
+          border: 1px solid #e2e8f0;
+          font-size: 12px;
+          font-weight: bold;
+          justify-content: center;
         }
 
         .input-main {
           width: 100%;
+          text-align: center;
+          font-size: 22px;
           padding: 15px;
-          border-radius: 12px;
-          border: 1px solid #ccc;
+          border-radius: 16px;
+          border: 2px solid #e2e8f0;
         }
 
         .btn-primary {
           width: 100%;
           background: #2563eb;
           color: white;
-          padding: 12px;
-          border-radius: 12px;
-          font-weight: bold;
+          padding: 15px;
+          border-radius: 16px;
+          font-weight: 900;
         }
 
         .btn-success {
           width: 100%;
           background: #16a34a;
           color: white;
-          padding: 12px;
-          border-radius: 12px;
+          padding: 15px;
+          border-radius: 16px;
           display: flex;
           justify-content: center;
           gap: 8px;
@@ -287,24 +281,26 @@ export default function Home() {
 
         .btn-reset {
           width: 100%;
-          padding: 12px;
-          border-radius: 12px;
-          border: 1px dashed #ccc;
+          border: 2px dashed #cbd5f5;
+          padding: 15px;
+          border-radius: 16px;
           display: flex;
           justify-content: center;
           gap: 8px;
         }
 
+        /* RESPONSIVO 🔥 */
         .card-item {
           display: grid;
           grid-template-columns: 1fr;
           gap: 10px;
           background: white;
           padding: 15px;
-          border-radius: 12px;
+          border-radius: 16px;
+          border: 1px solid #e2e8f0;
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 640px) {
           .card-item {
             grid-template-columns: repeat(2, 1fr);
           }
@@ -316,21 +312,32 @@ export default function Home() {
           }
         }
 
-        .input-item {
+        .card-item input {
           padding: 10px;
-          border-radius: 8px;
-          border: 1px solid #ccc;
+          border: 1px solid #cbd5e1;
+          border-radius: 10px;
         }
 
         .card-result {
           background: white;
           padding: 20px;
-          border-radius: 12px;
+          border-radius: 20px;
           text-align: center;
         }
 
         .destaque {
           border: 2px solid #3b82f6;
+        }
+
+        .title-section {
+          font-weight: bold;
+          text-transform: uppercase;
+        }
+
+        .badge {
+          background: #e2e8f0;
+          padding: 5px 10px;
+          border-radius: 999px;
         }
       `}</style>
     </div>
