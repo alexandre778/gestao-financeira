@@ -76,7 +76,6 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50 p-6 font-sans">
       <div className="max-w-5xl mx-auto space-y-8">
-
         {/* HEADER */}
         <header className="space-y-6 border-b border-slate-200 pb-6">
           <div className="flex items-center gap-3">
@@ -125,7 +124,10 @@ export default function Home() {
               Análise Financeira do Dia
             </h2>
 
-            <form onSubmit={iniciarAnalise} className="max-w-xs mx-auto space-y-4">
+            <form
+              onSubmit={iniciarAnalise}
+              className="max-w-xs mx-auto space-y-4"
+            >
               <p className="text-sm text-slate-500">
                 Quantos itens deseja analisar?
               </p>
@@ -134,25 +136,20 @@ export default function Home() {
                 type="number"
                 min="1"
                 required
-                value={numItens || ''}
+                value={numItens === 0 ? '' : numItens}
                 onChange={(e) => setNumItens(Number(e.target.value))}
                 className="input-main"
                 placeholder="0"
               />
 
-              <button className="btn-primary">
-                INICIAR ANÁLISE
-              </button>
+              <button className="btn-primary">INICIAR ANÁLISE</button>
             </form>
           </div>
         ) : !mostrarResultado ? (
-
           /* FORMULÁRIO */
           <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="title-section">
-                Dados Financeiros
-              </h2>
+              <h2 className="title-section">Dados Financeiros</h2>
               <span className="badge">{itens.length} ITENS</span>
             </div>
 
@@ -178,7 +175,11 @@ export default function Home() {
                   type="number"
                   placeholder="Venda"
                   onChange={(e) =>
-                    handleInputChange(index, 'precoVenda', Number(e.target.value))
+                    handleInputChange(
+                      index,
+                      'precoVenda',
+                      Number(e.target.value),
+                    )
                   }
                 />
 
@@ -186,47 +187,39 @@ export default function Home() {
                   type="number"
                   placeholder="Qtd"
                   onChange={(e) =>
-                    handleInputChange(index, 'quantidadeVendida', Number(e.target.value))
+                    handleInputChange(
+                      index,
+                      'quantidadeVendida',
+                      Number(e.target.value),
+                    )
                   }
                 />
               </div>
             ))}
 
-            <button
-              onClick={() => setResultado(true)}
-              className="btn-success"
-            >
+            <button onClick={() => setResultado(true)} className="btn-success">
               <TrendingUp size={18} />
               GERAR RELATÓRIO
             </button>
           </div>
         ) : (
-
           /* RESULTADO */
           <div className="space-y-8">
             <div className="grid md:grid-cols-3 gap-6">
-
               <div className="card-result">
                 <p>Faturamento</p>
-                <h2 className="text-blue-600">
-                  R$ {totalReceita.toFixed(2)}
-                </h2>
+                <h2 className="text-blue-600">R$ {totalReceita.toFixed(2)}</h2>
               </div>
 
               <div className="card-result">
                 <p>Custo</p>
-                <h2 className="text-red-500">
-                  R$ {totalCusto.toFixed(2)}
-                </h2>
+                <h2 className="text-red-500">R$ {totalCusto.toFixed(2)}</h2>
               </div>
 
               <div className="card-result destaque">
                 <p>Lucro</p>
-                <h2 className="text-green-600">
-                  R$ {lucroTotal.toFixed(2)}
-                </h2>
+                <h2 className="text-green-600">R$ {lucroTotal.toFixed(2)}</h2>
               </div>
-
             </div>
 
             <button onClick={reiniciar} className="btn-reset">
@@ -257,6 +250,14 @@ export default function Home() {
           padding: 15px;
           border-radius: 16px;
           border: 2px solid #e2e8f0;
+          color: #1e293b;
+          background-color: white;
+          outline: none;
+          transition: border-color 0.2s;
+        }
+
+        .input-main:focus {
+          border-color: #2563eb;
         }
 
         .btn-primary {
