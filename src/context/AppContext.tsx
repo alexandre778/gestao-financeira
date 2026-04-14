@@ -25,13 +25,14 @@ export interface Venda {
   itens: VendaItem[];
   total: number;
   data: string;
+  hora: string;
 }
 
 interface AppContextType {
   produtos: Produto[];
   setProdutos: React.Dispatch<React.SetStateAction<Produto[]>>;
   vendas: Venda[];
-  addVenda: (venda: Omit<Venda, 'data'>) => void;
+  addVenda: (venda: Omit<Venda, 'data' | 'hora'>) => void;
 }
 
 const AppContext = createContext<AppContextType>({} as AppContextType);
@@ -70,10 +71,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }, [vendas, isInitialized]);
 
-  const addVenda = (venda: Omit<Venda, 'data'>) => {
+  const addVenda = (venda: Omit<Venda, 'data' | 'hora'>) => {
+    const agora = new Date();
     const novaVenda = {
       ...venda,
-      data: new Date().toISOString(), // ISO é mais consistente para persistência
+      data: agora.toLocaleDateString('pt-BR'),
+      hora: agora.toLocaleTimeString('pt-BR'),
     };
 
     setVendas((prev) => [...prev, novaVenda]);

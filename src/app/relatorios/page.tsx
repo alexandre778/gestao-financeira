@@ -28,8 +28,10 @@ export default function Relatorios() {
   const { vendas } = useApp();
   const [dataHora, setDataHora] = useState({ data: '', hora: '' });
   const [filtro, setFiltro] = useState<'semana' | 'mes' | 'ano'>('semana');
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     const atualizar = () => {
       const agora = new Date();
       setDataHora({
@@ -44,15 +46,24 @@ export default function Relatorios() {
 
   const getChartData = () => {
     if (filtro === 'semana') {
-      const dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta'];
-      const valores = new Array(5).fill(0);
+      const dias = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+      const valores = new Array(7).fill(0);
 
       vendas.forEach((v: Venda) => {
-        const d = new Date(v.data || new Date());
+        // Converte string DD/MM/YYYY para Date compatível com o build
+        const partes = v.data?.split('/') || [];
+        const d =
+          partes.length === 3
+            ? new Date(
+                Number(partes[2]),
+                Number(partes[1]) - 1,
+                Number(partes[0]),
+              )
+            : new Date();
+
         const diaIndex = d.getDay(); // 0 (Dom) a 6 (Sab)
-        if (diaIndex >= 1 && diaIndex <= 5) {
-          valores[diaIndex - 1] += v.total;
-        }
+        const idx = diaIndex === 0 ? 6 : diaIndex - 1; // Ajusta: Seg=0...Dom=6
+        valores[idx] += v.total;
       });
       return { labels: dias, data: valores };
     }
@@ -75,7 +86,16 @@ export default function Relatorios() {
       const valores = new Array(12).fill(0);
 
       vendas.forEach((v: Venda) => {
-        const d = new Date(v.data || new Date());
+        const partes = v.data?.split('/') || [];
+        const d =
+          partes.length === 3
+            ? new Date(
+                Number(partes[2]),
+                Number(partes[1]) - 1,
+                Number(partes[0]),
+              )
+            : new Date();
+
         valores[d.getMonth()] += v.total;
       });
       return { labels: nomesMeses, data: valores };
@@ -83,7 +103,16 @@ export default function Relatorios() {
 
     const anosMap: { [key: string]: number } = {};
     vendas.forEach((v: Venda) => {
-      const ano = new Date(v.data || new Date()).getFullYear().toString();
+      const partes = v.data?.split('/') || [];
+      const d =
+        partes.length === 3
+          ? new Date(
+              Number(partes[2]),
+              Number(partes[1]) - 1,
+              Number(partes[0]),
+            )
+          : new Date();
+      const ano = d.getFullYear().toString();
       anosMap[ano] = (anosMap[ano] || 0) + v.total;
     });
     const labelsAnos = Object.keys(anosMap).sort();
@@ -165,7 +194,18 @@ export default function Relatorios() {
             Ano
           </button>
         </div>
-        <Bar data={data} />
+        <div className="relative h-[300px] w-full">
+          {isMounted ? (
+            <Bar
+              data={data}
+              options={{ responsive: true, maintainAspectRatio: false }}
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full text-slate-400">
+              Carregando gráfico...
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

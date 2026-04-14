@@ -7,9 +7,8 @@ export async function getProdutos() {
 }
 
 export async function upsertProduto(data: {
-  id?: string;
+  id?: number;
   nome: string;
-  custo: number;
   preco: number;
   estoque: number;
 }) {
@@ -18,13 +17,19 @@ export async function upsertProduto(data: {
       where: { id: data.id },
       data: {
         nome: data.nome,
-        custo: data.custo,
         preco: data.preco,
         estoque: data.estoque,
       },
     });
   }
-  return await prisma.produto.create({ data });
+
+  return await prisma.produto.create({
+    data: {
+      nome: data.nome,
+      preco: data.preco,
+      estoque: data.estoque,
+    },
+  });
 }
 
 export async function getVendas() {
@@ -35,23 +40,24 @@ export async function getVendas() {
 }
 
 export async function createVenda(vendaData: {
-  data: string;
-  hora: string;
   total: number;
-  itens: any[];
+  itens: {
+    produtoId: number;
+    quantidade: number;
+    preco: number;
+  }[];
 }) {
   return await prisma.venda.create({
     data: {
-      data: vendaData.data,
-      hora: vendaData.hora,
       total: vendaData.total,
       itens: {
         create: vendaData.itens.map((item) => ({
-          nome: item.nome,
+          produtoId: item.produtoId,
+          quantidade: item.quantidade,
           preco: item.preco,
-          qtd: item.qtd,
         })),
       },
     },
+    include: { itens: true },
   });
 }

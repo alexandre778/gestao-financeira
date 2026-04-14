@@ -47,12 +47,9 @@ export default function VendasPage() {
   };
 
   const finalizar = () => {
-    const agora = new Date();
     addVenda({
       itens: carrinho,
       total,
-      data: agora.toLocaleDateString('pt-BR'),
-      hora: agora.toLocaleTimeString('pt-BR'),
     });
 
     setCarrinho([]);

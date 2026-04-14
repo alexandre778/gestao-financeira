@@ -2,23 +2,12 @@ import prisma from '@/prisma/client';
 import { NextResponse } from 'next/server';
 
 interface ItemVendaBody {
-  produtoId: string;
+  produtoId: number;
   quantidade: number;
 }
 
 interface VendaBody {
   itens: ItemVendaBody[];
-}
-
-function formatDate(date: Date) {
-  return date.toLocaleDateString('pt-BR');
-}
-
-function formatTime(date: Date) {
-  return date.toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
 }
 
 export async function POST(req: Request) {
@@ -34,9 +23,9 @@ export async function POST(req: Request) {
 
     const venda = await prisma.$transaction(async (tx) => {
       const itensCreate = [] as Array<{
-        nome: string;
+        produtoId: number;
+        quantidade: number;
         preco: number;
-        qtd: number;
       }>;
       let total = 0;
 
@@ -55,9 +44,9 @@ export async function POST(req: Request) {
 
         total += produto.preco * item.quantidade;
         itensCreate.push({
-          nome: produto.nome,
+          produtoId: item.produtoId,
+          quantidade: item.quantidade,
           preco: produto.preco,
-          qtd: item.quantidade,
         });
 
         await tx.produto.update({
@@ -68,8 +57,6 @@ export async function POST(req: Request) {
 
       return await tx.venda.create({
         data: {
-          data: formatDate(new Date()),
-          hora: formatTime(new Date()),
           total,
           itens: { create: itensCreate },
         },
