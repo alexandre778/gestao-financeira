@@ -87,7 +87,7 @@ export default function NovaVenda() {
 
     setLoading(true);
     try {
-      const res = await fetch('/api/vendas', {
+      const res = await fetch('/api/venda', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

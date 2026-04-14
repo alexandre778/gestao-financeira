@@ -35,13 +35,16 @@ export default function RelatoriosPage() {
       setVendas(data);
       setLoading(false);
     };
+
     fetchData();
   }, []);
 
-  if (loading) return <div className="p-6">Carregando dados...</div>;
+  if (loading) {
+    return <div className="p-6">Carregando dados...</div>;
+  }
 
-  // TOTAL
-  const total = vendas.reduce((acc, v) => acc + (v.total || 0), 0);
+  // TOTAL - Garantindo que o valor seja numérico (Prisma Float -> JS number)
+  const total = vendas.reduce((acc, v) => acc + (Number(v.total) || 0), 0);
 
   // AGRUPAR PRODUTOS VENDIDOS
   const produtosMap: Record<string, number> = {};
@@ -55,15 +58,17 @@ export default function RelatoriosPage() {
     });
   });
 
-  const dataProdutos = Object.keys(produtosMap).map((nome) => ({
-    name: nome,
-    quantidade: produtosMap[nome],
-  }));
+  const dataProdutos = Object.keys(produtosMap)
+    .sort((a, b) => produtosMap[b] - produtosMap[a]) // Ordenar por mais vendidos
+    .map((nome) => ({
+      name: nome,
+      quantidade: produtosMap[nome],
+    }));
 
   // VENDAS POR DIA (simulado)
   const vendasPorDia = vendas.map((v, i) => ({
     name: `Venda ${i + 1}`,
-    total: v.total || 0,
+    total: Number(v.total) || 0,
   }));
 
   // CORES
@@ -106,48 +111,58 @@ export default function RelatoriosPage() {
       {/* GRÁFICOS */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* GRÁFICO DE BARRAS */}
-        <div className="bg-white p-6 rounded-xl shadow">
+        <div className="bg-white p-6 rounded-xl shadow min-h-[350px]">
           <h2 className="font-bold mb-4">Produtos Mais Vendidos</h2>
 
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={dataProdutos}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="quantidade" fill="#2563eb" />
-            </BarChart>
-          </ResponsiveContainer>
+          {dataProdutos.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={dataProdutos}>
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="quantidade" fill="#2563eb" />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <p className="text-gray-400">Nenhum dado disponível</p>
+          )}
         </div>
 
         {/* GRÁFICO DE PIZZA */}
-        <div className="bg-white p-6 rounded-xl shadow">
+        <div className="bg-white p-6 rounded-xl shadow min-h-[350px]">
           <h2 className="font-bold mb-4">Distribuição de Vendas</h2>
 
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={dataProdutos}
-                dataKey="quantidade"
-                nameKey="name"
-                outerRadius={100}
-                label
-              >
-                {dataProdutos.map((_, index) => (
-                  <Cell key={index} fill={cores[index % cores.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          {dataProdutos.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={dataProdutos}
+                  dataKey="quantidade"
+                  nameKey="name"
+                  outerRadius={100}
+                  label
+                >
+                  {dataProdutos.map((_, index) => (
+                    <Cell key={index} fill={cores[index % cores.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <p className="text-gray-400">Nenhum dado disponível</p>
+          )}
         </div>
 
         {/* GRÁFICO DE EVOLUÇÃO */}
-        <div className="bg-white p-6 rounded-xl shadow lg:col-span-2">
+        <div className="bg-white p-6 rounded-xl shadow lg:col-span-2 min-h-[350px]">
           <h2 className="font-bold mb-4">Evolução das Vendas</h2>
 
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={vendasPorDia}>
+            <BarChart data={vendasPorDia.slice(-10)}>
+              {' '}
+              {/* Mostrar as últimas 10 */}
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
