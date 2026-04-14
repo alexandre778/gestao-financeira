@@ -15,13 +15,23 @@ import {
   YAxis,
 } from 'recharts';
 
+interface VendaItem {
+  nome: string;
+  qtd: number;
+}
+
+interface Venda {
+  total: number;
+  itens: VendaItem[];
+}
+
 export default function RelatoriosPage() {
-  const [vendas, setVendas] = useState<any[]>([]);
+  const [vendas, setVendas] = useState<Venda[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getVendas();
+      const data = (await getVendas()) as Venda[];
       setVendas(data);
       setLoading(false);
     };
@@ -30,14 +40,14 @@ export default function RelatoriosPage() {
 
   if (loading) return <div className="p-6">Carregando dados...</div>;
 
-  // ?? TOTAL
-  const total = vendas.reduce((acc, v) => acc + v.total, 0);
+  // TOTAL
+  const total = vendas.reduce((acc, v) => acc + (v.total || 0), 0);
 
-  // ?? AGRUPAR PRODUTOS VENDIDOS
+  // AGRUPAR PRODUTOS VENDIDOS
   const produtosMap: Record<string, number> = {};
 
   vendas.forEach((venda) => {
-    venda.itens.forEach((item) => {
+    venda.itens?.forEach((item) => {
       if (!produtosMap[item.nome]) {
         produtosMap[item.nome] = 0;
       }
@@ -50,13 +60,13 @@ export default function RelatoriosPage() {
     quantidade: produtosMap[nome],
   }));
 
-  // ?? VENDAS POR DIA (simulado)
+  // VENDAS POR DIA (simulado)
   const vendasPorDia = vendas.map((v, i) => ({
     name: `Venda ${i + 1}`,
-    total: v.total,
+    total: v.total || 0,
   }));
 
-  // ?? CORES
+  // CORES
   const cores = ['#2563eb', '#16a34a', '#f59e0b', '#ef4444', '#9333ea'];
 
   return (
