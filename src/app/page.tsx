@@ -40,6 +40,7 @@ export default function Home() {
     }
   };
 
+  // 🔥 CORRIGIDO (TIPAGEM PERFEITA)
   const handleInputChange = <K extends keyof ProdutoData>(
     index: number,
     field: K,
@@ -73,18 +74,18 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-6 font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 p-6 font-sans">
       <div className="max-w-5xl mx-auto space-y-8">
 
         {/* HEADER */}
         <header className="space-y-6 border-b border-slate-200 pb-6">
-          <div className="flex flex-col md:flex-row md:items-center gap-3">
-            <div className="bg-blue-600 p-3 rounded-xl text-white shadow-lg w-fit">
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-600 p-3 rounded-xl text-white shadow-lg">
               <Calculator size={30} />
             </div>
 
             <div>
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-slate-800 uppercase">
+              <h1 className="text-2xl font-black text-slate-800 uppercase">
                 Sistema de Gestão Financeira
               </h1>
               <p className="text-sm text-blue-600 font-semibold">
@@ -94,7 +95,7 @@ export default function Home() {
           </div>
 
           {/* MENU */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link href="/vendas" className="card-menu">
               <ShoppingCart size={18} />
               <span>Vendas</span>
@@ -119,8 +120,8 @@ export default function Home() {
 
         {/* INÍCIO */}
         {!confirmado ? (
-          <div className="bg-white p-6 md:p-10 rounded-3xl shadow-xl border text-center space-y-6">
-            <h2 className="text-lg md:text-xl font-semibold text-slate-700">
+          <div className="bg-white p-10 rounded-3xl shadow-xl border text-center space-y-6">
+            <h2 className="text-xl font-semibold text-slate-700">
               Análise Financeira do Dia
             </h2>
 
@@ -148,7 +149,7 @@ export default function Home() {
 
           /* FORMULÁRIO */
           <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div className="flex justify-between items-center">
               <h2 className="title-section">
                 Dados Financeiros
               </h2>
@@ -203,7 +204,7 @@ export default function Home() {
 
           /* RESULTADO */
           <div className="space-y-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
 
               <div className="card-result">
                 <p>Faturamento</p>
@@ -247,7 +248,6 @@ export default function Home() {
           border: 1px solid #e2e8f0;
           font-size: 12px;
           font-weight: bold;
-          justify-content: center;
         }
 
         .input-main {
@@ -289,27 +289,14 @@ export default function Home() {
           gap: 8px;
         }
 
-        /* RESPONSIVO 🔥 */
         .card-item {
           display: grid;
-          grid-template-columns: 1fr;
+          grid-template-columns: repeat(4, 1fr);
           gap: 10px;
           background: white;
           padding: 15px;
           border-radius: 16px;
           border: 1px solid #e2e8f0;
-        }
-
-        @media (min-width: 640px) {
-          .card-item {
-            grid-template-columns: repeat(2, 1fr);
-          }
-        }
-
-        @media (min-width: 1024px) {
-          .card-item {
-            grid-template-columns: repeat(4, 1fr);
-          }
         }
 
         .card-item input {
