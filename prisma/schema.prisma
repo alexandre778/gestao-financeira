@@ -13,26 +13,31 @@ model Produto {
   preco      Float
   estoque    Int
   itensVenda ItemVenda[]
+
   createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 }
 
 model Venda {
-  id        Int         @id @default(autoincrement())
-  total     Float
-  data      DateTime    @default(now())
-  itens     ItemVenda[]
-  createdAt DateTime    @default(now())
+  id         Int         @id @default(autoincrement())
+  total      Float
+  data       DateTime    @default(now())
+  itens      ItemVenda[]
+
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
 }
 
 model ItemVenda {
-  id         Int     @id @default(autoincrement())
-  vendaId    Int
-  produtoId  Int
-  quantidade Int
-  preco      Float
+  id           Int      @id @default(autoincrement())
+  vendaId      Int
+  produtoId    Int
+  quantidade   Int
+  preco        Float
 
-  venda      Venda   @relation(fields: [vendaId], references: [id], onDelete: Cascade)
-  produto    Produto @relation(fields: [produtoId], references: [id], onDelete: Restrict)
+  venda        Venda    @relation(fields: [vendaId], references: [id], onDelete: Cascade)
+  produto      Produto  @relation(fields: [produtoId], references: [id], onDelete: Restrict)
 
-  createdAt  DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
