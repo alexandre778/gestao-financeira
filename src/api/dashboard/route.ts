@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import prisma from "@/prisma/client";
+import prisma from '@/lib/prisma';
+import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
@@ -13,7 +13,7 @@ export async function GET() {
 
     const totalVendas = vendasHoje.reduce((acc, v) => acc + v.total, 0);
 
-    // Saídas (exemplo: 10% das vendas como despesa)
+    // Saï¿½das (exemplo: 10% das vendas como despesa)
     const saidas = totalVendas * 0.1;
 
     // Saldo em caixa
@@ -25,6 +25,9 @@ export async function GET() {
       saldo,
     });
   } catch (error) {
-    return NextResponse.json({ message: "Erro ao buscar dashboard" }, { status: 500 });
+    return NextResponse.json(
+      { message: 'Erro ao buscar dashboard' },
+      { status: 500 },
+    );
   }
 }

@@ -1,6 +1,8 @@
 // src/pages/api/vendas.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
-import prisma from '../../prisma/client';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 interface ItemVendaBody {
   produtoId: number;

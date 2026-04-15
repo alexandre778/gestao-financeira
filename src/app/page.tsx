@@ -20,9 +20,11 @@ interface ProdutoData {
 }
 
 export default function Home() {
-  const [numItens, setNumItens] = useState<number>(0);
-  const [confirmado, setConfirmado] = useState(false);
-  const [itens, setItens] = useState<ProdutoData[]>([]);
+  const [numItens, setNumItens] = useState<number>(1);
+  const [confirmado, setConfirmado] = useState(true);
+  const [itens, setItens] = useState<ProdutoData[]>([
+    { nome: '', custo: 0, precoVenda: 0, quantidadeVendida: 0 },
+  ]);
   const [mostrarResultado, setResultado] = useState(false);
 
   const iniciarAnalise = (e: FormEvent) => {
@@ -67,9 +69,9 @@ export default function Home() {
   const lucroTotal = totalReceita - totalCusto;
 
   const reiniciar = () => {
-    setNumItens(0);
-    setConfirmado(false);
-    setItens([]);
+    setNumItens(1);
+    setConfirmado(true);
+    setItens([{ nome: '', custo: 0, precoVenda: 0, quantidadeVendida: 0 }]);
     setResultado(false);
   };
 
@@ -93,7 +95,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* MENU */}
+          {/* MENU - AGORA VISÍVEL */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link href="/vendas" className="card-menu">
               <ShoppingCart size={18} />
@@ -145,87 +147,109 @@ export default function Home() {
               <button className="btn-primary">INICIAR ANÁLISE</button>
             </form>
           </div>
-        ) : !mostrarResultado ? (
-          /* FORMULÁRIO */
-          <div className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="title-section">Dados Financeiros</h2>
-              <span className="badge">{itens.length} ITENS</span>
-            </div>
-
-            {itens.map((item, index) => (
-              <div key={index} className="card-item">
-                <input
-                  type="text"
-                  placeholder="Nome"
-                  onChange={(e) =>
-                    handleInputChange(index, 'nome', e.target.value)
-                  }
-                />
-
-                <input
-                  type="number"
-                  placeholder="Custo"
-                  onChange={(e) =>
-                    handleInputChange(index, 'custo', Number(e.target.value))
-                  }
-                />
-
-                <input
-                  type="number"
-                  placeholder="Venda"
-                  onChange={(e) =>
-                    handleInputChange(
-                      index,
-                      'precoVenda',
-                      Number(e.target.value),
-                    )
-                  }
-                />
-
-                <input
-                  type="number"
-                  placeholder="Qtd"
-                  onChange={(e) =>
-                    handleInputChange(
-                      index,
-                      'quantidadeVendida',
-                      Number(e.target.value),
-                    )
-                  }
-                />
-              </div>
-            ))}
-
-            <button onClick={() => setResultado(true)} className="btn-success">
-              <TrendingUp size={18} />
-              GERAR RELATÓRIO
-            </button>
-          </div>
         ) : (
-          /* RESULTADO */
-          <div className="space-y-8">
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="card-result">
-                <p>Faturamento</p>
-                <h2 className="text-blue-600">R$ {totalReceita.toFixed(2)}</h2>
-              </div>
-
-              <div className="card-result">
-                <p>Custo</p>
-                <h2 className="text-red-500">R$ {totalCusto.toFixed(2)}</h2>
-              </div>
-
-              <div className="card-result destaque">
-                <p>Lucro</p>
-                <h2 className="text-green-600">R$ {lucroTotal.toFixed(2)}</h2>
-              </div>
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <h2 className="title-section">Dados Financeiros</h2>
+              <span className="badge">ITENS</span>
             </div>
 
-            <button onClick={reiniciar} className="btn-reset">
-              <RefreshCw size={18} />
-              NOVA ANÁLISE
-            </button>
+            {!mostrarResultado ? (
+              /* FORMULÁRIO */
+              <div className="space-y-6">
+                <div className="grid grid-cols-4 gap-[10px] px-[15px] text-xs font-black text-slate-700 uppercase">
+                  <span>Nome</span>
+                  <span>Custo</span>
+                  <span>Venda</span>
+                  <span>Qtd</span>
+                </div>
+
+                {itens.map((item, index) => (
+                  <div key={index} className="card-item">
+                    <input
+                      type="text"
+                      placeholder="Nome"
+                      onChange={(e) =>
+                        handleInputChange(index, 'nome', e.target.value)
+                      }
+                    />
+
+                    <input
+                      type="number"
+                      placeholder="Custo"
+                      onChange={(e) =>
+                        handleInputChange(
+                          index,
+                          'custo',
+                          Number(e.target.value),
+                        )
+                      }
+                    />
+
+                    <input
+                      type="number"
+                      placeholder="Venda"
+                      onChange={(e) =>
+                        handleInputChange(
+                          index,
+                          'precoVenda',
+                          Number(e.target.value),
+                        )
+                      }
+                    />
+
+                    <input
+                      type="number"
+                      placeholder="Qtd"
+                      onChange={(e) =>
+                        handleInputChange(
+                          index,
+                          'quantidadeVendida',
+                          Number(e.target.value),
+                        )
+                      }
+                    />
+                  </div>
+                ))}
+
+                <button
+                  onClick={() => setResultado(true)}
+                  className="btn-success"
+                >
+                  <TrendingUp size={18} />
+                  GERAR RELATÓRIO
+                </button>
+              </div>
+            ) : (
+              /* RESULTADO */
+              <div className="space-y-8">
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="card-result">
+                    <p>Faturamento</p>
+                    <h2 className="text-blue-600">
+                      R$ {totalReceita.toFixed(2)}
+                    </h2>
+                  </div>
+
+                  <div className="card-result">
+                    <p>Custo</p>
+                    <h2 className="text-red-500">R$ {totalCusto.toFixed(2)}</h2>
+                  </div>
+
+                  <div className="card-result destaque">
+                    <p>Lucro</p>
+                    <h2 className="text-green-600">
+                      R$ {lucroTotal.toFixed(2)}
+                    </h2>
+                  </div>
+                </div>
+
+                <button onClick={reiniciar} className="btn-reset">
+                  <RefreshCw size={18} />
+                  NOVA ANÁLISE
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -320,12 +344,16 @@ export default function Home() {
         .title-section {
           font-weight: bold;
           text-transform: uppercase;
+          color: #1e293b;
         }
 
         .badge {
-          background: #e2e8f0;
-          padding: 5px 10px;
+          background: #2563eb;
+          color: white;
+          padding: 4px 12px;
           border-radius: 999px;
+          font-size: 12px;
+          font-weight: 900;
         }
       `}</style>
     </div>
