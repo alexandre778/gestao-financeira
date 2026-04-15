@@ -28,10 +28,8 @@ export default function Relatorios() {
   const { vendas } = useApp();
   const [dataHora, setDataHora] = useState({ data: '', hora: '' });
   const [filtro, setFiltro] = useState<'semana' | 'mes' | 'ano'>('semana');
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
     const atualizar = () => {
       const agora = new Date();
       setDataHora({
@@ -195,16 +193,10 @@ export default function Relatorios() {
           </button>
         </div>
         <div className="relative h-[300px] w-full">
-          {isMounted ? (
-            <Bar
-              data={data}
-              options={{ responsive: true, maintainAspectRatio: false }}
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-slate-400">
-              Carregando gráfico...
-            </div>
-          )}
+          <Bar
+            data={data}
+            options={{ responsive: true, maintainAspectRatio: false }}
+          />
         </div>
       </div>
     </div>
