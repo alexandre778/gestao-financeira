@@ -12,20 +12,21 @@ model Produto {
   nome       String
   preco      Float
   estoque    Int
+
   itensVenda ItemVenda[]
 
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 }
 
 model Venda {
   id         Int         @id @default(autoincrement())
   total      Float
-  data       DateTime    @default(now())
+
   itens      ItemVenda[]
 
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 }
 
 model ItemVenda {
@@ -36,8 +37,8 @@ model ItemVenda {
   preco        Float
 
   venda        Venda    @relation(fields: [vendaId], references: [id], onDelete: Cascade)
-  produto      Produto  @relation(fields: [produtoId], references: [id], onDelete: Restrict)
+  produto      Produto  @relation(fields: [produtoId], references: [id])
 
   createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  updatedAt    DateTime @default(now()) @updatedAt
 }
