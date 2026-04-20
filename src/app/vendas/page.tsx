@@ -14,7 +14,8 @@ export default function VendasPage() {
   const { addVenda } = useApp();
   const [carrinho, setCarrinho] = useState<CarrinhoItem[]>([]);
   const [nome, setNome] = useState('');
-  const [preco, setPreco] = useState<number | ''>('');
+  const [preco, setPreco] = useState('');
+  const [qtd, setQtd] = useState('1');
   const [dataHora, setDataHora] = useState({ data: '', hora: '' });
 
   useEffect(() => {
@@ -33,10 +34,14 @@ export default function VendasPage() {
   const total = carrinho.reduce((acc, i) => acc + i.preco * (i.qtd || 1), 0);
 
   const adicionarAoCarrinho = () => {
-    if (nome && preco) {
-      setCarrinho([...carrinho, { nome, preco: Number(preco), qtd: 1 }]);
+    const valorNum = parseFloat(preco.replace(',', '.'));
+    const qtdNum = parseInt(qtd) || 1;
+
+    if (nome && !isNaN(valorNum)) {
+      setCarrinho([...carrinho, { nome, preco: valorNum, qtd: qtdNum }]);
       setNome('');
       setPreco('');
+      setQtd('1');
     }
   };
 
@@ -80,27 +85,60 @@ export default function VendasPage() {
               Nome do Produto
             </label>
             <input
-              className="w-full border p-2 rounded mt-1 focus:ring-2 focus:ring-blue-500 outline-none"
+              className={`w-full border p-2 rounded mt-1 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold ${nome ? 'bg-slate-50 border-blue-300 text-slate-900' : 'text-gray-500'}`}
               value={nome}
               onChange={(e) => setNome(e.target.value)}
               placeholder="Ex: Coca-Cola"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Preço do produto (R$)
-            </label>
-            <input
-              type="number"
-              className="w-full border p-2 rounded mt-1 focus:ring-2 focus:ring-blue-500 outline-none"
-              value={preco}
-              onChange={(e) =>
-                setPreco(e.target.value === '' ? '' : Number(e.target.value))
-              }
-              placeholder="0.00"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Preço Unit. (R$)
+              </label>
+              <div className="relative mt-1">
+                <span
+                  className={`absolute left-3 top-1/2 -translate-y-1/2 font-bold text-sm transition-colors ${preco ? 'text-blue-600' : 'text-gray-400'}`}
+                >
+                  R$
+                </span>
+                <input
+                  type="text"
+                  className={`w-full border pl-9 p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold ${preco ? 'bg-blue-50/50 border-blue-300 text-blue-700' : 'text-gray-500'}`}
+                  value={preco}
+                  onChange={(e) => setPreco(e.target.value)}
+                  placeholder="0,00"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Quantidade
+              </label>
+              <input
+                type="number"
+                className={`w-full border p-2 rounded mt-1 focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold ${qtd && qtd !== '0' ? 'bg-slate-50 border-blue-300 text-slate-900' : 'text-gray-500'}`}
+                value={qtd}
+                onChange={(e) => setQtd(e.target.value)}
+                min="1"
+              />
+            </div>
           </div>
         </div>
+
+        {/* Subtotal integrado (dentro da área do formulário) */}
+        {preco && qtd && (
+          <div className="flex justify-end pr-1">
+            <p className="text-xs font-bold text-blue-600 italic">
+              Subtotal deste item: R${' '}
+              {(
+                (parseFloat(preco.replace(',', '.')) || 0) *
+                (parseInt(qtd) || 0)
+              ).toFixed(2)}
+            </p>
+          </div>
+        )}
+
         <button
           onClick={adicionarAoCarrinho}
           className="bg-blue-600 text-white px-6 py-2 rounded font-bold hover:bg-blue-700 transition w-full md:w-auto"
@@ -115,8 +153,14 @@ export default function VendasPage() {
           <thead className="bg-gray-50 border-b">
             <tr>
               <th className="p-3 font-semibold text-gray-600">Produto</th>
+              <th className="p-3 font-semibold text-gray-600 text-center">
+                Qtd
+              </th>
               <th className="p-3 font-semibold text-gray-600 text-right">
-                Preço
+                Unitário
+              </th>
+              <th className="p-3 font-semibold text-gray-600 text-right">
+                Total
               </th>
               <th className="p-3 font-semibold text-gray-600 text-center">
                 Ações
@@ -127,7 +171,7 @@ export default function VendasPage() {
             {carrinho.length === 0 ? (
               <tr>
                 <td
-                  colSpan={3}
+                  colSpan={5}
                   className="p-6 text-center text-gray-400 italic"
                 >
                   O carrinho está vazio
@@ -140,8 +184,12 @@ export default function VendasPage() {
                   className="border-b last:border-0 hover:bg-gray-50"
                 >
                   <td className="p-3 text-gray-800">{item.nome}</td>
-                  <td className="p-3 text-right text-gray-800">
+                  <td className="p-3 text-center text-gray-600">{item.qtd}</td>
+                  <td className="p-3 text-right text-gray-500 text-xs">
                     R$ {item.preco.toFixed(2)}
+                  </td>
+                  <td className="p-3 text-right text-gray-800">
+                    R$ {(item.preco * item.qtd).toFixed(2)}
                   </td>
                   <td className="p-3 text-center">
                     <button

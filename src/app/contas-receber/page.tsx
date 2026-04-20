@@ -1,7 +1,15 @@
 // src/app/(dashboard)/contas-receber/page.tsx
 'use client';
 
-import { Calendar, Clock, Edit3, Plus, Save, Trash2 } from 'lucide-react';
+import {
+  Calendar,
+  Clock,
+  Edit3,
+  Plus,
+  Printer,
+  Save,
+  Trash2,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function ContasReceber() {
@@ -52,12 +60,21 @@ export default function ContasReceber() {
     Pago: 'bg-green-100 text-green-700',
   };
 
+  const removerItem = (secao: keyof typeof categorias, id: number) => {
+    setCategorias({
+      ...categorias,
+      [secao]: categorias[secao].filter((item) => item.id !== id),
+    });
+  };
+
   const adicionarItem = (secao: keyof typeof categorias) => {
+    setIsEditing(true);
     const novoItem = { id: Date.now(), nome: '', valor: 0 };
     setCategorias({ ...categorias, [secao]: [...categorias[secao], novoItem] });
   };
 
   const adicionarFatura = () => {
+    setIsEditing(true);
     const nova = {
       id: Date.now(),
       cliente: '',
@@ -66,6 +83,37 @@ export default function ContasReceber() {
       status: 'Pendente',
     };
     setFaturas([...faturas, nova]);
+  };
+
+  const imprimirFatura = (fatura: (typeof faturas)[0]) => {
+    const win = window.open('', 'PRINT', 'height=600,width=800');
+    if (!win) return;
+    win.document.write(`
+      <html>
+        <head>
+          <title>Fatura - ${fatura.cliente}</title>
+          <style>
+            body { font-family: sans-serif; padding: 40px; line-height: 1.6; color: #333; }
+            .header { border-bottom: 2px solid #2563eb; margin-bottom: 20px; padding-bottom: 10px; }
+            .content { margin-top: 20px; }
+            .footer { margin-top: 40px; font-size: 12px; color: #666; border-top: 1px solid #ddd; padding-top: 10px; }
+            h1 { color: #2563eb; margin: 0; }
+          </style>
+        </head>
+        <body>
+          <div class="header"><h1>Recibo Financeiro</h1></div>
+          <div class="content">
+            <p><strong>Cliente:</strong> ${fatura.cliente || '---'}</p>
+            <p><strong>Valor:</strong> R$ ${fatura.valor.toFixed(2)}</p>
+            <p><strong>Vencimento:</strong> ${fatura.vencimento || '---'}</p>
+            <p><strong>Status:</strong> ${fatura.status.toUpperCase()}</p>
+          </div>
+          <div class="footer">Gerado em ${dataHora.data} às ${dataHora.hora}</div>
+          <script>window.print(); window.close();</script>
+        </body>
+      </html>
+    `);
+    win.document.close();
   };
 
   return (
@@ -188,7 +236,7 @@ export default function ContasReceber() {
                   {secaoItems.map((item, idx) => (
                     <li
                       key={item.id}
-                      className="flex justify-between gap-2 text-gray-600"
+                      className="flex justify-between items-center gap-2 text-gray-600"
                     >
                       {isEditing ? (
                         <>
@@ -211,6 +259,12 @@ export default function ContasReceber() {
                               setCategorias(novas);
                             }}
                           />
+                          <button
+                            onClick={() => removerItem(key, item.id)}
+                            className="text-red-400 hover:text-red-600 transition"
+                          >
+                            <Trash2 size={14} />
+                          </button>
                         </>
                       ) : (
                         <>
@@ -345,6 +399,13 @@ export default function ContasReceber() {
                       <Trash2 size={16} />
                     </button>
                   )}
+                  <button
+                    onClick={() => imprimirFatura(f)}
+                    className="text-gray-400 hover:text-blue-600 transition"
+                    title="Imprimir Recibo"
+                  >
+                    <Printer size={16} />
+                  </button>
                   <button className="text-blue-600 hover:underline text-sm">
                     Baixar Título
                   </button>
