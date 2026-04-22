@@ -60,10 +60,18 @@ export default function CaixaPage() {
           <table className="w-full text-left">
             <thead className="bg-white border-b text-xs uppercase text-slate-400 font-bold">
               <tr>
-                <th className="p-4">Data</th>
-                <th className="p-4">Hora</th>
-                <th className="p-4">Itens</th>
-                <th className="p-4 text-right">Valor Total</th>
+                <th scope="col" className="p-4">
+                  Data
+                </th>
+                <th scope="col" className="p-4">
+                  Hora
+                </th>
+                <th scope="col" className="p-4">
+                  Produtos
+                </th>
+                <th scope="col" className="p-4 text-right">
+                  Valor Total
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -85,7 +93,18 @@ export default function CaixaPage() {
                     <td className="p-4 text-slate-600">{venda.data}</td>
                     <td className="p-4 text-slate-600">{venda.hora}</td>
                     <td className="p-4 text-slate-600">
-                      {venda.itens?.length || 0} prod.
+                      <div className="flex flex-col">
+                        <span className="font-medium text-slate-700">
+                          {venda.itens && venda.itens.length > 0
+                            ? venda.itens
+                                .map((item: any) => item.nome)
+                                .join(', ')
+                            : 'Nenhum item'}
+                        </span>
+                        <span className="text-xs text-slate-400">
+                          {venda.itens?.length || 0} itens
+                        </span>
+                      </div>
                     </td>
                     <td className="p-4 text-right font-bold text-green-600">
                       R$ {venda.total.toFixed(2)}
