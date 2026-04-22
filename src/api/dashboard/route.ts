@@ -8,7 +8,7 @@ export async function GET() {
     hoje.setHours(0, 0, 0, 0);
 
     const vendasHoje = await prisma.venda.findMany({
-      where: { data: { gte: hoje } },
+      where: { createdAt: { gte: hoje } },
     });
 
     const totalVendas = vendasHoje.reduce((acc, v) => acc + v.total, 0);
