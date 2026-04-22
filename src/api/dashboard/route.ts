@@ -24,7 +24,7 @@ export async function GET() {
       saidas,
       saldo,
     });
-  } catch (error) {
+  } catch (_error) {
     return NextResponse.json(
       { message: 'Erro ao buscar dashboard' },
       { status: 500 },

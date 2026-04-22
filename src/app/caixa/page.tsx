@@ -97,7 +97,7 @@ export default function CaixaPage() {
                         <span className="font-medium text-slate-700">
                           {venda.itens && venda.itens.length > 0
                             ? venda.itens
-                                .map((item: any) => item.nome)
+                                .map((item: { nome: string }) => item.nome)
                                 .join(', ')
                             : 'Nenhum item'}
                         </span>
