@@ -34,7 +34,7 @@ export default function Home() {
               className="absolute
                          flex items-center justify-center
                          bg-[#0061ff] hover:bg-[#0056e6]
-                         text-white font-black text-[1vw] uppercase tracking-widest
+                         text-white font-black text-[3vw] sm:text-[2vw] md:text-[1vw] uppercase tracking-widest
                          rounded-none shadow-2xl transition-all hover:brightness-110
                          active:scale-95 border-none z-50 whitespace-nowrap"
             >

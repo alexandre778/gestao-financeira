@@ -7,11 +7,11 @@ export async function GET() {
     const hoje = new Date();
     hoje.setHours(0, 0, 0, 0);
 
-    const vendasHoje = await prisma.venda.findMany({
+    const result = await prisma.venda.aggregate({
       where: { createdAt: { gte: hoje } },
+      _sum: { total: true },
     });
-
-    const totalVendas = vendasHoje.reduce((acc, v) => acc + v.total, 0);
+    const totalVendas = result._sum.total || 0;
 
     // Sa�das (exemplo: 10% das vendas como despesa)
     const saidas = totalVendas * 0.1;
@@ -24,7 +24,7 @@ export async function GET() {
       saidas,
       saldo,
     });
-  } catch (_error) {
+  } catch {
     return NextResponse.json(
       { message: 'Erro ao buscar dashboard' },
       { status: 500 },
