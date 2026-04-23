@@ -1,46 +1,60 @@
+
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Home() {
   return (
-    <div className="h-screen w-full bg-[#030816] font-sans overflow-hidden flex items-center justify-center">
-      <section className="relative w-full h-full">
-        {/* IMAGEM DE FUNDO */}
+    <div className="min-h-screen w-full bg-[#030816] font-sans">
+
+      {/* HERO */}
+      <section className="relative w-full h-screen">
+
+        {/* IMAGEM */}
         <Image
           src="/banner-financeiro.jpg"
-          alt="Painel de Controle Financeiro Moderno"
+          alt="Painel Financeiro"
           fill
           priority
           sizes="100vw"
-          quality={100}
-          className="object-cover"
+          className="object-cover object-center"
         />
 
-        {/* MÁSCARA DE POSICIONAMENTO - Esta div garante que o botão acompanhe a imagem */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-full h-full max-w-[1774px] aspect-[1774/880]">
-            {/*
-              O posicionamento em porcentagem dentro de um contêiner com aspect-ratio
-              garante que o botão "tape" a palavra em qualquer tamanho de tela.
-            */}
+        {/* OVERLAY */}
+        <div className="absolute inset-0 bg-black/40 flex flex-col justify-center px-6 sm:px-10 md:px-20">
+
+          {/* TEXTO */}
+          <div className="max-w-xl space-y-4">
+            <h1 className="text-white font-bold leading-tight
+              text-2xl sm:text-4xl md:text-5xl">
+              Controle Financeiro
+              <span className="text-blue-400 block">
+                Simples e Inteligente
+              </span>
+            </h1>
+
+            <p className="text-gray-300 text-sm sm:text-base md:text-lg">
+              Gerencie vendas, acompanhe lucros e tenha controle total do seu negócio.
+            </p>
+
+            {/* BOTÃO */}
             <Link
               href="/vendas"
-              style={{
-                left: '0%', // Alongado totalmente para a borda esquerda
-                top: '78.5%', // Ajustado para centralizar sobre a altura da palavra
-                width: '35%', // Encurtado um pouco no lado direito
-                height: '11.5%', // Ajuste de altura para cobertura total
-              }}
-              className="absolute
-                         flex items-center justify-center
-                         bg-[#0061ff] hover:bg-[#0056e6]
-                         text-white font-black text-[3vw] sm:text-[2vw] md:text-[1vw] uppercase tracking-widest
-                         rounded-none shadow-2xl transition-all hover:brightness-110
-                         active:scale-95 border-none z-50 whitespace-nowrap"
+              className="
+                inline-block
+                bg-[#0061ff] hover:bg-[#0056e6]
+                text-white font-bold uppercase
+                px-5 py-3 rounded-lg
+                text-sm sm:text-base md:text-lg
+                shadow-lg transition-all
+                hover:scale-105 active:scale-95
+              "
             >
               Começar agora
             </Link>
           </div>
+
         </div>
       </section>
     </div>
