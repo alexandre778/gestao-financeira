@@ -131,7 +131,7 @@ export default function Relatorios() {
     ],
   };
 
-  const total = vendas.reduce((acc, v) => acc + v.total, 0);
+  const total = vendas.reduce((acc, v) => acc + (Number(v.total) || 0), 0);
 
   return (
     <div className="p-6 space-y-6">

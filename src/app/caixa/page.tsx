@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 
 export default function CaixaPage() {
-  const { vendas } = useApp();
+  const { vendas = [] } = useApp() || {};
   const [dataHora, setDataHora] = useState({ data: '', hora: '' });
 
   useEffect(() => {
@@ -20,7 +20,15 @@ export default function CaixaPage() {
     return () => clearInterval(timer);
   }, []);
 
-  const total = vendas.reduce((acc, v) => acc + v.total, 0);
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(value);
+  };
+
+  // Cálculo do total que estava faltando no seu código original
+  const total = vendas.reduce((acc, v) => acc + (Number(v.total) || 0), 0);
 
   return (
     <div className="p-6">
@@ -45,7 +53,7 @@ export default function CaixaPage() {
           Saldo Total em Caixa
         </p>
         <h2 className="text-5xl font-black text-green-600">
-          R$ {total.toFixed(2)}
+          {formatCurrency(total)}
         </h2>
       </div>
 
@@ -53,7 +61,7 @@ export default function CaixaPage() {
       <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
         <div className="p-4 border-b bg-gray-50 flex items-center gap-2">
           <Receipt size={20} className="text-slate-400" />
-          <h3 className="font-bold text-slate-700">Histórico de Vendas</h3>
+          <h3 className="font-bold text-slate-700">Fluxo de Entradas</h3>
         </div>
 
         <div className="overflow-x-auto">
@@ -85,29 +93,30 @@ export default function CaixaPage() {
                   </td>
                 </tr>
               ) : (
-                vendas.map((venda, index) => (
+                // No caixa, mantemos a ordem cronológica ou inversa conforme preferência
+                [...vendas].reverse().map((venda, index) => (
                   <tr
                     key={index}
                     className="hover:bg-slate-50 transition-colors"
                   >
-                    <td className="p-4 text-slate-600">{venda.data}</td>
-                    <td className="p-4 text-slate-600">{venda.hora}</td>
-                    <td className="p-4 text-slate-600">
+                    <td className="p-4 text-sm text-slate-600">{venda.data}</td>
+                    <td className="p-4 text-sm text-slate-600">{venda.hora}</td>
+                    <td className="p-4 text-sm text-slate-600">
                       <div className="flex flex-col">
-                        <span className="font-medium text-slate-700">
+                        <span className="font-medium text-slate-700 truncate max-w-[200px]">
                           {venda.itens && venda.itens.length > 0
                             ? venda.itens
                                 .map((item: { nome: string }) => item.nome)
                                 .join(', ')
                             : 'Nenhum item'}
                         </span>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-[10px] text-slate-400">
                           {venda.itens?.length || 0} itens
                         </span>
                       </div>
                     </td>
                     <td className="p-4 text-right font-bold text-green-600">
-                      R$ {venda.total.toFixed(2)}
+                      {formatCurrency(venda.total)}
                     </td>
                   </tr>
                 ))

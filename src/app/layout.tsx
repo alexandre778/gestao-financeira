@@ -1,7 +1,7 @@
 import React from 'react';
-import Sidebar from '../components/Sidebar';
 import { AppProvider } from '../context/AppContext';
 import './globals.css';
+import Navbar from './Navbar';
 
 export const metadata = {
   title: 'Sistema de Gestão Financeira',
@@ -15,12 +15,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className="flex flex-col md:flex-row min-h-screen bg-gray-100 text-gray-900">
+      <body className="min-h-screen bg-[#030816] text-gray-100 antialiased">
         <AppProvider>
-          <Sidebar />
-          <main className="flex-1 h-screen overflow-y-auto p-4 md:p-0">
-            {children}
-          </main>
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-1 w-full pt-16">{children}</main>
+          </div>
         </AppProvider>
       </body>
     </html>

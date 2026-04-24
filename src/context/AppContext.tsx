@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 export interface Produto {
   nome: string;
@@ -15,17 +9,17 @@ export interface Produto {
   estoque: number;
 }
 
-interface VendaItem {
+export interface ItemVenda {
   nome: string;
   preco: number;
   qtd: number;
 }
 
 export interface Venda {
-  itens: VendaItem[];
-  total: number;
   data: string;
   hora: string;
+  itens: ItemVenda[];
+  total: number;
 }
 
 interface AppContextType {
@@ -35,56 +29,27 @@ interface AppContextType {
   addVenda: (venda: Omit<Venda, 'data' | 'hora'>) => void;
 }
 
-const AppContext = createContext<AppContextType>({} as AppContextType);
+const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export function AppProvider({ children }: { children: ReactNode }) {
+export function AppProvider({ children }: { children: React.ReactNode }) {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [vendas, setVendas] = useState<Venda[]>([]);
-  const [isInitialized, setIsInitialized] = useState(false);
-
-  // Carregar dados iniciais no cliente
-  useEffect(() => {
-    try {
-      const savedProdutos = localStorage.getItem('gestao_produtos');
-      if (savedProdutos) setProdutos(JSON.parse(savedProdutos));
-
-      const savedVendas = localStorage.getItem('gestao_vendas');
-      if (savedVendas) setVendas(JSON.parse(savedVendas));
-    } catch (error) {
-      console.error('Erro ao carregar dados do localStorage:', error);
-    } finally {
-      setIsInitialized(true);
-    }
-  }, []);
-
-  // Salvar sempre que houver alteração
-  useEffect(() => {
-    if (isInitialized) {
-      // Salva apenas após a carga inicial para evitar apagar dados existentes
-      localStorage.setItem('gestao_produtos', JSON.stringify(produtos));
-    }
-  }, [produtos, isInitialized]);
-
-  useEffect(() => {
-    if (isInitialized) {
-      localStorage.setItem('gestao_vendas', JSON.stringify(vendas));
-    }
-  }, [vendas, isInitialized]);
 
   const addVenda = (venda: Omit<Venda, 'data' | 'hora'>) => {
     const agora = new Date();
-    const novaVenda = {
+    const novaVenda: Venda = {
       ...venda,
       data: agora.toLocaleDateString('pt-BR'),
       hora: agora.toLocaleTimeString('pt-BR'),
     };
 
+    // 1. Adiciona ao histórico de vendas
     setVendas((prev) => [...prev, novaVenda]);
 
-    // Atualizar estoque: subtrai a quantidade vendida
-    setProdutos((prev) =>
-      prev.map((p) => {
-        const itemVendido = venda.itens.find((i) => i.nome === p.nome);
+    // 2. Lógica de Conexão: Atualiza o estoque automaticamente
+    setProdutos((prevProdutos) =>
+      prevProdutos.map((p) => {
+        const itemVendido = venda.itens.find((item) => item.nome === p.nome);
         if (itemVendido) {
           return { ...p, estoque: p.estoque - itemVendido.qtd };
         }
@@ -100,10 +65,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export const useApp = () => {
+export function useApp() {
   const context = useContext(AppContext);
-  if (!context || Object.keys(context).length === 0) {
+  if (!context)
     throw new Error('useApp deve ser usado dentro de um AppProvider');
-  }
   return context;
-};
+}
