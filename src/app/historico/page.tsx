@@ -2,72 +2,62 @@
 
 import { useApp } from '@/context/AppContext';
 
+/**
+ * Tipo da Venda (SEM any e com id)
+ */
+interface Venda {
+  id: number;
+  total: number;
+  data: string;
+}
+
 export default function HistoricoVendas() {
-  const { vendas = [] } = useApp() || {};
+  const { vendas } = useApp() as { vendas: Venda[] };
 
-  const totalGeral = vendas.reduce((acc, v) => acc + (Number(v.total) || 0), 0);
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
-  };
+  const totalGeral = vendas.reduce((acc: number, v: Venda) => {
+    return acc + v.total;
+  }, 0);
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Histórico de Vendas</h1>
+    <div className="p-6 space-y-6 min-h-screen bg-slate-50">
+      {/* TÍTULO */}
+      <h1 className="text-2xl font-bold text-slate-800">
+        📊 Histórico de Vendas
+      </h1>
 
-      {/* RESUMO FINANCEIRO */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border-l-4 border-blue-600">
-        <p className="text-gray-600">Total Geral Vendido</p>
-        <h2 className="text-3xl font-bold text-green-600">
-          {formatCurrency(totalGeral)}
-        </h2>
+      {/* TOTAL GERAL */}
+      <div className="bg-green-100 p-4 rounded shadow">
+        <p className="text-lg font-semibold text-green-700">
+          Total Geral: R$ {totalGeral.toFixed(2)}
+        </p>
       </div>
 
-      {/* LISTA */}
-      <div className="space-y-4">
-        {vendas.length === 0 ? (
-          <p className="text-gray-500 italic text-center py-4">
-            Nenhuma venda registrada.
-          </p>
-        ) : (
-          [...vendas].reverse().map((v, i) => (
+      {/* LISTA DE VENDAS */}
+      {vendas.length === 0 ? (
+        <p className="text-slate-500">Nenhuma venda registrada.</p>
+      ) : (
+        <div className="space-y-4">
+          {[...vendas].reverse().map((v: Venda) => (
             <div
-              key={v.id || i}
+              key={v.id}
               className="bg-white p-4 rounded shadow flex justify-between items-center"
             >
               <div>
-                <p className="text-sm text-gray-500">
-                  {v.data} - {v.hora}
+                <p className="font-semibold text-slate-700">
+                  Venda #{v.id}
                 </p>
-                <div className="flex items-center gap-2">
-                  <p className="font-bold text-slate-800">
-                    Venda #{vendas.length - i}
-                  </p>
-                  <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-bold uppercase">
-                    {v.itens?.length || 0} Itens
-                  </span>
-                </div>
-                <div className="mt-2 flex flex-wrap gap-1">
-                  {v.itens?.map((it: any, idx: number) => (
-                    <span
-                      key={idx}
-                      className="text-[11px] text-gray-500 bg-gray-100 px-2 py-0.5 rounded border border-gray-200"
-                    >
-                      {it.qtd}x {it.nome}
-                    </span>
-                  ))}
-                </div>
+                <p className="text-sm text-slate-500">
+                  {new Date(v.data).toLocaleString()}
+                </p>
               </div>
-              <p className="font-bold text-green-600">
-                {formatCurrency(v.total)}
-              </p>
+
+              <div className="text-green-600 font-bold text-lg">
+                R$ {v.total.toFixed(2)}
+              </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
