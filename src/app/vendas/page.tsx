@@ -38,10 +38,9 @@ export default function VendasPage() {
     return () => clearInterval(timer);
   }, []);
 
-  // ✅ tipado corretamente
   const total = carrinho.reduce(
-    (acc: number, i: CarrinhoItem) => acc + i.preco * (i.qtd || 1),
-    0,
+    (acc: number, i: CarrinhoItem) => acc + i.preco * i.qtd,
+    0
   );
 
   const selecionarProduto = (nomeProd: string) => {
@@ -62,6 +61,7 @@ export default function VendasPage() {
         ...carrinho,
         { id: produtoId, nome, preco: valorNum, qtd: qtdNum },
       ]);
+
       setProdutoId(null);
       setNome('');
       setPreco('');
@@ -69,12 +69,14 @@ export default function VendasPage() {
     }
   };
 
+  // ✅ CORREÇÃO AQUI
   const finalizar = () => {
     addVenda({
       itens: carrinho.map((item) => ({
         produtoId: item.id,
-        quantidade: item.qtd,
+        nome: item.nome,
         preco: item.preco,
+        qtd: item.qtd,
       })),
       total,
     });
@@ -107,9 +109,7 @@ export default function VendasPage() {
           </label>
           <select
             value={nome}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              selecionarProduto(e.target.value)
-            }
+            onChange={(e) => selecionarProduto(e.target.value)}
             className="border p-2 w-full rounded bg-white"
           >
             <option value="">Selecione</option>
@@ -129,9 +129,7 @@ export default function VendasPage() {
             type="text"
             placeholder="0,00"
             value={preco}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setPreco(e.target.value)
-            }
+            onChange={(e) => setPreco(e.target.value)}
             className="border p-2 w-full rounded"
           />
         </div>
@@ -143,9 +141,7 @@ export default function VendasPage() {
           <input
             type="number"
             value={qtd}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setQtd(e.target.value)
-            }
+            onChange={(e) => setQtd(e.target.value)}
             className="border p-2 w-full rounded"
           />
         </div>
@@ -164,7 +160,9 @@ export default function VendasPage() {
           <span>{item.nome}</span>
           <span>R$ {(item.preco * item.qtd).toFixed(2)}</span>
           <button
-            onClick={() => setCarrinho(carrinho.filter((_, i) => i !== index))}
+            onClick={() =>
+              setCarrinho(carrinho.filter((_, i) => i !== index))
+            }
           >
             <Trash2 size={16} />
           </button>
