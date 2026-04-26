@@ -8,7 +8,7 @@ export default function ProdutosPage() {
   const { produtos, setProdutos } = useApp();
   const [editandoIndex, setEditandoIndex] = useState<number | null>(null);
 
-  // ✅ SEM id no estado
+  // ✅ SEM id no formulário
   const [novo, setNovo] = useState<Omit<Produto, 'id'>>({
     nome: '',
     custo: 0,
@@ -30,7 +30,7 @@ export default function ProdutosPage() {
       setProdutos([
         ...produtos,
         {
-          id: Date.now(), // ✅ ID criado aqui
+          id: Date.now(), // ✅ cria ID automaticamente
           ...novo,
         },
       ]);
@@ -147,7 +147,7 @@ export default function ProdutosPage() {
       <div className="mt-6">
         {produtos.map((p, i) => (
           <div
-            key={p.id}
+            key={p.id} // ✅ agora correto
             className="flex justify-between items-center border-b py-2"
           >
             <span>
