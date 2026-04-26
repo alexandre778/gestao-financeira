@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 
 interface CarrinhoItem {
-  id: number;
+  produtoId: number;
   nome: string;
   preco: number;
   qtd: number;
@@ -19,10 +19,7 @@ export default function VendasPage() {
   const [nome, setNome] = useState('');
   const [preco, setPreco] = useState('');
   const [qtd, setQtd] = useState('1');
-  const [dataHora, setDataHora] = useState({
-    data: '--/--/----',
-    hora: '--:--:--',
-  });
+  const [dataHora, setDataHora] = useState({ data: '', hora: '' });
 
   useEffect(() => {
     const atualizar = () => {
@@ -47,7 +44,7 @@ export default function VendasPage() {
   const selecionarProduto = (nomeProd: string) => {
     const prod = produtos.find((p) => p.nome === nomeProd);
     if (prod) {
-      setProdutoId(prod.id);
+      setProdutoId((prod as any).id);
       setNome(prod.nome);
       setPreco(prod.preco.toString());
     }
@@ -57,25 +54,21 @@ export default function VendasPage() {
     const valorNum = parseFloat(preco.replace(',', '.'));
     const qtdNum = parseInt(qtd) || 1;
 
-    if (produtoId && nome && !isNaN(valorNum)) {
+    if (nome && !isNaN(valorNum) && produtoId) {
       setCarrinho([
         ...carrinho,
-        { id: produtoId, nome, preco: valorNum, qtd: qtdNum },
+        { produtoId, nome, preco: valorNum, qtd: qtdNum },
       ]);
-      setProdutoId(null);
       setNome('');
       setPreco('');
       setQtd('1');
+      setProdutoId(null);
     }
   };
 
   const finalizar = () => {
     addVenda({
-      itens: carrinho.map((item) => ({
-        produtoId: item.id,
-        quantidade: item.qtd,
-        preco: item.preco,
-      })),
+      itens: carrinho,
       total,
     });
 
@@ -88,71 +81,56 @@ export default function VendasPage() {
       <h1 className="text-2xl font-bold mb-4">Realizar Venda</h1>
 
       {/* DATA E HORA */}
-      <div className="flex gap-6 mb-8 text-gray-500">
-        <div className="flex items-center gap-2">
-          <Calendar size={18} />
-          <span className="text-sm font-medium">{dataHora.data}</span>
+      <div className="flex gap-4 mb-6">
+        <div className="flex items-center gap-1">
+          <Calendar size={16} className="text-gray-500" />
+          <span>{dataHora.data}</span>
         </div>
-        <div className="flex items-center gap-2">
-          <Clock size={18} />
-          <span className="text-sm font-medium">{dataHora.hora}</span>
+        <div className="flex items-center gap-1">
+          <Clock size={16} className="text-gray-500" />
+          <span>{dataHora.hora}</span>
         </div>
       </div>
 
       {/* FORM */}
-      <div className="flex flex-col gap-4 mb-8 bg-gray-50 p-4 rounded-lg">
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
-            Produto
-          </label>
-          <select
-            value={nome}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              selecionarProduto(e.target.value)
-            }
-            className="border p-2 w-full rounded bg-white"
-          >
-            <option value="">Selecione</option>
-            {produtos.map((p) => (
-              <option key={p.id} value={p.nome}>
-                {p.nome} (Estoque: {p.estoque})
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className="mb-6 space-y-4">
+        <select
+          value={nome}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+            selecionarProduto(e.target.value)
+          }
+          className="border p-2 w-full"
+        >
+          <option value="">Selecione</option>
+          {produtos.map((p) => (
+            <option key={p.nome} value={p.nome}>
+              {p.nome} (Estoque: {p.estoque})
+            </option>
+          ))}
+        </select>
 
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
-            Preço Unitário
-          </label>
-          <input
-            type="text"
-            placeholder="0,00"
-            value={preco}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setPreco(e.target.value)
-            }
-            className="border p-2 w-full rounded"
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Preço"
+          value={preco}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setPreco(e.target.value)
+          }
+          className="border p-2 w-full"
+        />
 
-        <div className="flex flex-col gap-1">
-          <label className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
-            Quantidade
-          </label>
-          <input
-            type="number"
-            value={qtd}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setQtd(e.target.value)
-            }
-            className="border p-2 w-full rounded"
-          />
-        </div>
+        <input
+          type="number"
+          value={qtd}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setQtd(e.target.value)
+          }
+          className="border p-2 w-full"
+        />
 
         <button
           onClick={adicionarAoCarrinho}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-4 text-sm rounded transition-colors w-fit"
+          className="bg-blue-600 text-white p-2"
         >
           Adicionar
         </button>
@@ -175,7 +153,7 @@ export default function VendasPage() {
 
       <button
         onClick={finalizar}
-        className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 text-sm mt-4 rounded transition-colors w-fit"
+        className="bg-green-600 text-white p-3 w-full mt-4"
       >
         Finalizar Venda
       </button>
