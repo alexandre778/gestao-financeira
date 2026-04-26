@@ -103,7 +103,7 @@ export default function VendasPage() {
         >
           <option value="">Selecione</option>
           {produtos.map((p) => (
-            <option key={p.nome} value={p.nome}>
+            <option key={(p as any).id || p.nome} value={p.nome}>
               {p.nome} (Estoque: {p.estoque})
             </option>
           ))}
