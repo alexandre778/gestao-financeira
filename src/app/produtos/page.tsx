@@ -8,7 +8,8 @@ export default function ProdutosPage() {
   const { produtos, setProdutos } = useApp();
   const [editandoIndex, setEditandoIndex] = useState<number | null>(null);
 
-  const [novo, setNovo] = useState<Produto>({
+  // ✅ SEM id no estado
+  const [novo, setNovo] = useState<Omit<Produto, 'id'>>({
     nome: '',
     custo: 0,
     preco: 0,
@@ -18,27 +19,55 @@ export default function ProdutosPage() {
   const salvar = () => {
     if (editandoIndex !== null) {
       const novosProdutos = [...produtos];
-      novosProdutos[editandoIndex] = novo;
+
+      novosProdutos[editandoIndex] = {
+        ...novosProdutos[editandoIndex],
+        ...novo,
+      };
+
       setProdutos(novosProdutos);
     } else {
-      setProdutos([...produtos, novo]);
+      setProdutos([
+        ...produtos,
+        {
+          id: Date.now(), // ✅ ID criado aqui
+          ...novo,
+        },
+      ]);
     }
+
     limparForm();
   };
 
   const editar = (index: number) => {
-    setNovo(produtos[index]);
+    const p = produtos[index];
+
+    setNovo({
+      nome: p.nome,
+      custo: p.custo,
+      preco: p.preco,
+      estoque: p.estoque,
+    });
+
     setEditandoIndex(index);
   };
 
   const limparForm = () => {
-    setNovo({ nome: '', custo: 0, preco: 0, estoque: 0 });
+    setNovo({
+      nome: '',
+      custo: 0,
+      preco: 0,
+      estoque: 0,
+    });
+
     setEditandoIndex(null);
   };
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Cadastro de Produtos</h1>
+      <h1 className="text-2xl font-bold mb-6">
+        Cadastro de Produtos 📦
+      </h1>
 
       <div className="grid gap-3 max-w-md">
         <div>
@@ -59,7 +88,6 @@ export default function ProdutosPage() {
           </label>
           <input
             className="w-full border p-2 rounded"
-            placeholder="0.00"
             type="number"
             value={novo.custo}
             onChange={(e) =>
@@ -74,7 +102,6 @@ export default function ProdutosPage() {
           </label>
           <input
             className="w-full border p-2 rounded"
-            placeholder="0.00"
             type="number"
             value={novo.preco}
             onChange={(e) =>
@@ -89,7 +116,6 @@ export default function ProdutosPage() {
           </label>
           <input
             className="w-full border p-2 rounded"
-            placeholder="0"
             type="number"
             value={novo.estoque}
             onChange={(e) =>
@@ -101,15 +127,16 @@ export default function ProdutosPage() {
         <div className="flex gap-2">
           <button
             onClick={salvar}
-            className="flex-grow bg-blue-600 text-white p-2 rounded font-bold hover:bg-blue-700 transition"
+            className="flex-grow bg-blue-600 text-white p-2 rounded font-bold hover:bg-blue-700"
           >
-            {editandoIndex !== null ? 'Salvar Alterações' : 'Adicionar Produto'}
+            {editandoIndex !== null
+              ? 'Salvar Alterações'
+              : 'Adicionar Produto'}
           </button>
 
           <button
             onClick={limparForm}
-            className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600 transition flex items-center gap-1 px-3 font-bold"
-            title="Limpar campos"
+            className="bg-gray-500 text-white p-2 rounded flex items-center gap-1 px-3 font-bold"
           >
             <RotateCcw size={18} />
             Limpar
@@ -120,15 +147,16 @@ export default function ProdutosPage() {
       <div className="mt-6">
         {produtos.map((p, i) => (
           <div
-            key={i}
+            key={p.id}
             className="flex justify-between items-center border-b py-2"
           >
             <span>
               {p.nome} - R$ {p.preco} - {p.estoque} un
             </span>
+
             <button
               onClick={() => editar(i)}
-              className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm font-bold"
+              className="text-blue-600 flex items-center gap-1 text-sm font-bold"
             >
               <Edit3 size={16} />
               Editar
