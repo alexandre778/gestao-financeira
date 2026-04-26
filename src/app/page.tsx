@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="min-h-screen w-full bg-[#030816] font-sans flex flex-col">
       {/* HERO */}
-      <section className="relative w-full h-[calc(100vh-64px)]">
+      <section className="relative w-full h-[250px] sm:h-[400px] md:h-[calc(100vh-64px)] bg-[#030816]">
         {/* IMAGEM */}
         <Image
           src="/banner-financeiro.jpg"
@@ -14,7 +14,7 @@ export default function Home() {
           fill
           priority
           sizes="100vw"
-          className="object-cover"
+          className="object-contain"
         />
 
         {/* OVERLAY */}
