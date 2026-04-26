@@ -44,7 +44,7 @@ export default function VendasPage() {
   const selecionarProduto = (nomeProd: string) => {
     const prod = produtos.find((p) => p.nome === nomeProd);
     if (prod) {
-      setProdutoId((prod as any).id);
+      setProdutoId(prod.id);
       setNome(prod.nome);
       setPreco(prod.preco.toString());
     }
@@ -103,7 +103,7 @@ export default function VendasPage() {
         >
           <option value="">Selecione</option>
           {produtos.map((p) => (
-            <option key={(p as any).id || p.nome} value={p.nome}>
+            <option key={p.id} value={p.nome}>
               {p.nome} (Estoque: {p.estoque})
             </option>
           ))}

@@ -6,6 +6,7 @@ import React, { createContext, useContext, useState } from 'react';
  * PRODUTO
  */
 export interface Produto {
+  id: number;
   nome: string;
   custo: number;
   preco: number;
@@ -16,6 +17,7 @@ export interface Produto {
  * ITEM DA VENDA
  */
 export interface ItemVenda {
+  produtoId: number;
   nome: string;
   preco: number;
   qtd: number;
@@ -71,7 +73,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
      */
     setProdutos((prevProdutos) =>
       prevProdutos.map((p) => {
-        const itemVendido = venda.itens.find((item) => item.nome === p.nome);
+        const itemVendido = venda.itens.find((item) => item.produtoId === p.id);
 
         if (itemVendido) {
           return {
