@@ -69,7 +69,6 @@ export default function VendasPage() {
     }
   };
 
-  // ✅ CORREÇÃO AQUI
   const finalizar = () => {
     addVenda({
       itens: carrinho.map((item) => ({
@@ -87,7 +86,7 @@ export default function VendasPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Realizar Venda</h1>
+      <h1 className="text-2xl font-bold mb-4">Realizar Venda 🚀</h1>
 
       {/* DATA E HORA */}
       <div className="flex gap-6 mb-8 text-gray-500">
